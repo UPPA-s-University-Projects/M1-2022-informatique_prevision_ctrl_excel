@@ -12,26 +12,34 @@ Sub calculBase()
     
    
     'Création de la colonne t
-    
-    VG.dataWs.Range("C1").FormulaR1C1 = "t"
-    VG.dataWs.Range("C2").FormulaR1C1 = "1"
-    VG.dataWs.Range("C2").AutoFill Destination:=VG.dataWs.Range("C2:C14"), Type:=xlFillSeries
+    VG.dataWs.Range(VG.paramWs.Range("startColBase").Value + "1").Select
+    Selection.FormulaR1C1 = "t"
+    Selection.Offset(1, 0).Select
+    Selection.FormulaR1C1 = "1"
+    Selection.AutoFill Destination:=VG.dataWs.Range("C2:C" + CStr(MiscFunc.EOF(VG.dataWs, 1))), Type:=xlFillSeries
     
     'Création de la colonne t2
-    VG.dataWs.Range("D1").FormulaR1C1 = "t2"
-    VG.dataWs.Range("D2").FormulaR1C1 = "=RC[-1]^2"
-    VG.dataWs.Range("D2").AutoFill Destination:=VG.dataWs.Range("D2:D14"), Type:=xlFillDefault
+    VG.dataWs.Range(VG.paramWs.Range("startColBase").Value + "1").Offset(0, 1).Select
+    Selection.FormulaR1C1 = "t2"
+    Selection.Offset(1, 0).Select
+    Selection.FormulaR1C1 = "=RC[-1]^2"
+    'Selection.AutoFill Destination:=Selection.Offset(0, CStr(MiscFunc.EOF(VG.dataWs, 1))), Type:=xlFillDefault
     
     'Création de la colonne t3
-    VG.dataWs.Range("E1").FormulaR1C1 = "t3"
-    VG.dataWs.Range("E2").FormulaR1C1 = "=RC[-1]^3"
-    VG.dataWs.Range("E2").AutoFill Destination:=VG.dataWs.Range("E2:E14"), Type:=xlFillDefault
+    VG.dataWs.Range(VG.paramWs.Range("startColBase").Value + "1").Offset(0, 2).Select
+    Selection.FormulaR1C1 = "t3"
+    Selection.Offset(1, 0).Select
+    Selection.FormulaR1C1 = "=RC[-1]^3"
+    'Selection.AutoFill Destination:=VG.dataWs.Range("E2:E14"), Type:=xlFillDefault
     
     
     'Création du graphique
     VG.dataWs.Range(VG.memoryWS.Range("axeX")).Select
     ActiveSheet.Shapes.AddChart2(332, xlLineMarkers).Select
-    ActiveChart.SetSourceData Source:=Range("DATA!$B:$B")
+    ActiveChart.SetSourceData Source:=Range(VG.memoryWS.Range("axeX"))
     ActiveChart.FullSeriesCollection(1).Select
     ActiveChart.FullSeriesCollection(1).Trendlines.Add
+    ActiveChart.FullSeriesCollection(1).XValues = "=" + VG.memoryWS.Range("axeY")
+    ActiveChart.Axes(xlCategory).Select
+    Selection.TickLabels.Orientation = xlUpward
 End Sub

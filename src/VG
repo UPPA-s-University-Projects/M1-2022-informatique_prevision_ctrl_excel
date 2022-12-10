@@ -1,9 +1,10 @@
 Attribute VB_Name = "VG"
-Public menuWs, dataWs, memoryWS As Worksheet
+Public menuWs, dataWs, memoryWS, paramWs As Worksheet
 
 Sub Init()
     Set menuWs = ActiveWorkbook.Worksheets("Menu")
     Set dataWs = ActiveWorkbook.Worksheets("DATA")
     Set memoryWS = ActiveWorkbook.Worksheets("Memory")
+    Set paramWs = ActiveWorkbook.Worksheets("param")
     
 End Sub

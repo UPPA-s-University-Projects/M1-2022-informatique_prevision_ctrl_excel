@@ -1,0 +1,4 @@
+Attribute VB_Name = "MiscFunc"
+Function EOF(ws, colNb) As Integer
+    EOF = ws.Cells(Rows.Count, colNb).End(xlUp).Row
+End Function
