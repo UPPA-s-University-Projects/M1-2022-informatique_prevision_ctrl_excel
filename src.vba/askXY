@@ -1,0 +1,18 @@
+Private Sub UserForm_Initialize()
+     VG.Init
+     VG.memoryWS.Range("processCancel").Value = False
+End Sub
+
+Private Sub btnOk_Click()
+   VG.memoryWS.Range("axeX").Value = Me.xRef.Value
+   VG.memoryWS.Range("axeY").Value = Me.yRef.Value
+   
+   Unload Me
+End Sub
+
+Private Sub Cancel_Click()
+    VG.memoryWS.Range("processCancel").Value = True
+
+    Unload Me
+End Sub
+

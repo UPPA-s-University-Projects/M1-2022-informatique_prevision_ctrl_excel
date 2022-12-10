@@ -1,0 +1,15 @@
+
+Private Sub CommandButton3_Click()
+    Unload Me
+End Sub
+
+Private Sub btnOk_Click()
+   VG.Init
+   
+   VG.memoryWS.Range("axeX").Value = Me.xRef.Value
+   VG.memoryWS.Range("axeY").Value = Me.yRef.Value
+End Sub
+
+Private Sub UserForm_Click()
+
+End Sub

@@ -1,0 +1,8 @@
+Public menuWs, dataWs, memoryWS As Worksheet
+
+Sub Init()
+    Set menuWs = ActiveWorkbook.Worksheets("Menu")
+    Set dataWs = ActiveWorkbook.Worksheets("DATA")
+    Set memoryWS = ActiveWorkbook.Worksheets("Memory")
+    
+End Sub
