@@ -1,3 +1,4 @@
+Attribute VB_Name = "askXY"
 Private Sub UserForm_Initialize()
      VG.Init
      VG.memoryWS.Range("processCancel").Value = False
