@@ -150,4 +150,21 @@ VG.Init
     Else
         VG.dataWs.Columns(askPlacementMMp.Column).Rows(freq / 2 + 1).Formula = "=SUM(" + askFirstCell.Address + ")"
     End If
+    
+    'Ajouter Y-MM(p) FORMULE : =SI(G5="";"";F5-G5)
+    VG.dataWs.Columns(askPlacementMMp.Column).Rows(1).Offset(0, 1).Formula = "Y-MM(" + CStr(freq) + ")"
+        
+    If freq Mod 2 = 0 Then
+        VG.dataWs.Columns(askPlacementMMp.Column).Rows(freq / 2).Offset(0, 1).Formula = _
+        "=IF(" + VG.dataWs.Columns(askPlacementMMp.Column).Rows(freq / 2).Value + askFirstCell.Address + "='';'';" + _
+        VG.dataWs.Columns(askPlacementMMp.Column).Rows(freq / 2).Value + VG.dataWs.Columns(VG.memoryWS.Range("axeX")).Rows(freq / 2).Value + _
+        ")"
+    Else
+        VG.dataWs.Columns(askPlacementMMp.Column).Rows(freq / 2 + 1).Offset(0, 1).Formula = "=SUM(" + askFirstCell.Address + ")"
+    End If
+End Sub
+
+Sub saisonnaliteX()
+    VG.Init
+    VG.sdxWs.Activate
 End Sub

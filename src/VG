@@ -1,5 +1,5 @@
 Attribute VB_Name = "VG"
-Public menuWs, dataWs, memoryWS, paramWs, tempWs As Worksheet
+Public menuWs, dataWs, memoryWS, paramWs, tempWs, sdxWs As Worksheet
 
 Sub Init()
     Set menuWs = ActiveWorkbook.Worksheets("Menu")
@@ -7,5 +7,6 @@ Sub Init()
     Set memoryWS = ActiveWorkbook.Worksheets("Memory")
     Set paramWs = ActiveWorkbook.Worksheets("param")
     Set tempWs = ActiveWorkbook.Worksheets("Temp")
+    Set sdxWs = ActiveWorkbook.Worksheets("Saisonnalité des données")
     
 End Sub
