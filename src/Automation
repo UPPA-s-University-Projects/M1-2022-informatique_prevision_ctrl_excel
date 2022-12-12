@@ -1,5 +1,6 @@
 Attribute VB_Name = "Automation"
 Sub calculBase()
+    Dim res As String
     VG.Init
     
     'On sélectionne la feuille de Data pour éviter les problèmes
@@ -10,27 +11,32 @@ Sub calculBase()
         Exit Sub
     End If
     
+    res = InputBox("A partie de quelle colonne générer les données?")
+    
+    If Not res = "" Or Not StrPtr(result) = 0 Then
+        VG.paramWs.Range("startColBase") = res
+    End If
    
     'Création de la colonne t
     VG.dataWs.Range(VG.paramWs.Range("startColBase").Value + "1").Select
     Selection.FormulaR1C1 = "t"
     Selection.Offset(1, 0).Select
     Selection.FormulaR1C1 = "1"
-    Selection.AutoFill Destination:=VG.dataWs.Range("C2:C" + CStr(MiscFunc.EOF(VG.dataWs, 1))), Type:=xlFillSeries
+    Selection.AutoFill Destination:=VG.dataWs.Range(VG.paramWs.Range("startColBase") + "2:" + VG.paramWs.Range("startColBase") + CStr(MiscFunc.EOF(VG.dataWs, 1))), Type:=xlFillSeries
     
     'Création de la colonne t2
     VG.dataWs.Range(VG.paramWs.Range("startColBase").Value + "1").Offset(0, 1).Select
     Selection.FormulaR1C1 = "t2"
     Selection.Offset(1, 0).Select
     Selection.FormulaR1C1 = "=RC[-1]^2"
-    'Selection.AutoFill Destination:=Selection.Offset(0, CStr(MiscFunc.EOF(VG.dataWs, 1))), Type:=xlFillDefault
+    'Selection.AutoFill Destination:=VG.dataWs.Range("E2:E" + CStr(MiscFunc.EOF(VG.dataWs, 1))), Type:=xlFillDefault
     
     'Création de la colonne t3
     VG.dataWs.Range(VG.paramWs.Range("startColBase").Value + "1").Offset(0, 2).Select
     Selection.FormulaR1C1 = "t3"
     Selection.Offset(1, 0).Select
     Selection.FormulaR1C1 = "=RC[-1]^3"
-    'Selection.AutoFill Destination:=VG.dataWs.Range("E2:E14"), Type:=xlFillDefault
+    'Selection.AutoFill Destination:=VG.dataWs.Range("E2:E" + CStr(MiscFunc.EOF(VG.dataWs, 1))), Type:=xlFillDefault
     
     
     'Création du graphique
@@ -42,4 +48,106 @@ Sub calculBase()
     ActiveChart.FullSeriesCollection(1).XValues = "=" + VG.memoryWS.Range("axeY")
     ActiveChart.Axes(xlCategory).Select
     Selection.TickLabels.Orientation = xlUpward
+End Sub
+
+Sub regLine()
+    VG.Init
+    
+    Dim askRangeN, askRangeK, askRangeRes, askRangeResPut As Range
+    
+    VG.tempWs.Select
+
+     Application.Run "ATPVBAEN.XLAM!Regress", VG.dataWs.Range(VG.memoryWS.Range("axeY")), _
+        VG.dataWs.Range(VG.memoryWS.Range("axeX")), False, True, , "reg_lin", True, True, True, _
+        True, , True
+        
+    Worksheets("reg_lin").Select
+    Columns("A:Z").Select
+    Columns("A:Z").EntireColumn.AutoFit
+    
+    'On demande n
+    Set askRangeN = Application.InputBox("Cellule observation", Type:=8)
+    Range("D3").Select
+    ActiveCell.FormulaR1C1 = "n="
+    Range("E3").Select
+    Application.CutCopyMode = False
+    ActiveCell.FormulaR1C1 = "=" + CStr(askRangeN.Value)
+    
+    'On demande k
+    Set askRangeK = Application.InputBox("Cellules Coefficients", Type:=8)
+    Range("D5").Select
+    ActiveCell.FormulaR1C1 = "k="
+    Range("E5").Select
+    Application.CutCopyMode = False
+    ActiveCell.Formula = "=ROWS(" + CStr(askRangeK.Address) + ")"
+    Range("D4").Select
+    
+    'On demande le MSE
+    Set askRangeRes = Application.InputBox("Cellules Résidus", Type:=8)
+    ActiveCell.FormulaR1C1 = "MSE = "
+    Range("E4").Select
+    Application.CutCopyMode = False
+    ActiveCell.Formula = "=1/" + CStr(askRangeN.Value) + "*SUMSQ(" + CStr(askRangeRes.Address) + ")"
+    Range("E5").Select
+
+    'On demande k/n
+    Range("F5").Select
+    ActiveCell.FormulaR1C1 = "k/n="
+    Range("G5").Select
+    Application.CutCopyMode = False
+    ActiveCell.FormulaR1C1 = "=RC[-2]/R[-2]C[-2]"
+    Range("D6").Select
+    
+    'On demande AIC
+    ActiveCell.FormulaR1C1 = "AIC="
+    Range("E6").Select
+    Application.CutCopyMode = False
+    ActiveCell.FormulaR1C1 = "=R[-3]C*LN(R[-2]C)+2*R[-1]C"
+    Range("F6").Select
+    
+    'On demande AICc
+    ActiveCell.FormulaR1C1 = "AICc="
+    Range("G6").Select
+    ActiveCell.FormulaR1C1 = _
+        "=RC[-2]+(2*R[-1]C[-2]*(R[-1]C[-2]+1)/R[-3]C[-2]-R[-1]C[-2]-1)"
+    Range("G7").Select
+    
+    'On demande Résidus
+    Set askRangeResPut = Application.InputBox("Tableau des observations, à droite des résidus (colonne vide), ligne 1", Type:=8)
+    Range(askRangeResPut.Address).Select
+    ActiveCell.FormulaR1C1 = "=IF(OR(RC<-2,RC>2),1,0)"
+    Range(askRangeResPut.Address).Select
+    
+    'Selection.AutoFill Destination:=Range("E25:E" + CStr(MiscFunc.EOF(Worksheets("reg_lin"), 1)))
+  
+    Range("E" + CStr(MiscFunc.EOF(Worksheets("reg_lin"), 1))).Select
+    Application.CutCopyMode = False
+    ActiveCell.FormulaR1C1 = "=SUM(R[-13]C:R[-1]C)"
+    Range("E39").Select
+End Sub
+
+
+Sub calculerMMP()
+
+VG.Init
+    
+    Dim askPlacementMMp, askFirstCell As Range
+    Dim freq As Integer
+    
+    VG.dataWs.Activate
+        
+    
+    'On demande où placer la colonne pour MMp
+    Set askPlacementMMp = Application.InputBox("Où voulez-vous placer la colonne du MM(p)", Type:=8)
+
+    freq = InputBox("Quelle est la fréquence de votre saison?")
+    
+    VG.dataWs.Columns(askPlacementMMp.Column).Rows(1).Formula = "MM(" + CStr(freq) + ")"
+    Set askFirstCell = Application.InputBox("Veuillez sélectionner les " + CStr(freq) + " premières cellules de la colonne des X", Type:=8)
+    
+    If freq Mod 2 = 0 Then
+        VG.dataWs.Columns(askPlacementMMp.Column).Rows(freq / 2).Formula = "=SUM(" + askFirstCell.Address + ")"
+    Else
+        VG.dataWs.Columns(askPlacementMMp.Column).Rows(freq / 2 + 1).Formula = "=SUM(" + askFirstCell.Address + ")"
+    End If
 End Sub
